@@ -39,12 +39,14 @@ server.get('/api/users/:id', (req, res) => {
 // POST
 server.post('/api/users', (req, res) => {
     const userInfo = req.body
+    req.params.name && req.params.bio ?
     db.insert(userInfo)
     .then(user => res.status(201).json(user))
     .catch(error => {
         console.log('error', error)
-        res.status(400).json({error: 'data must include a name and bio'})
-    }) 
+        res.status(500).json({ errorMessage: "Could not send information to the server." })
+    })
+    : res.status(400).json({ errorMessage: "Please provide name and bio for the user." })
 
 })
 
