@@ -9,16 +9,18 @@ server.use(express.json())
 
 // base URL message
 server.get('/api', (req, res) => {
-    res.send('Hello, API is working 👍🏻')
+    res.send('Hello, API is working 👍🏻 \n Please use /api/users to get the users \n Or you can use /api/users/:id to get one specifically by id')
 })
+
+
 // REQUEST HANDLERS
-// GET
+// GET ALL USERS
 server.get('/api/users', (req, res) => {
     db.find()
     .then(users => res.status(200).json(users))
     .catch(error => {
         console.log('error', error)
-        res.json({error: 'failed to get users'})
+        res.status(500).json({ error: "The users information could not be retrieved." })
     })
 })
 
@@ -27,12 +29,14 @@ server.get('/api/users/:id', (req, res) => {
     const userId = req.params.id
 
     db.findById(userId)
-    .then(user => res.status(200).json(user))
+    .then(user => {
+        user ? 
+        res.status(201).json(user)
+        : res.status(404).json({ message: "The user with the specified ID does not exist." })
+    })
     .catch(error => {
         console.log('error', error)
-        error.status(404).json({
-            error: 'cannot find user with supplied id'
-        })
+        res.status(404).json({ message: "The user with the specified ID does not exist." })
     })
 })
 
